@@ -100,7 +100,7 @@ dockers:
       - "--label=org.opencontainers.image.title={{.ProjectName}}"
       - "--label=org.opencontainers.image.revision={{.FullCommit}}"
       - "--label=org.opencontainers.image.version={{.Version}}"
-      - "--platform=linux/arm64"
+      - "--platform=linux/amd64"
   - id: atlas-stats-exporter-linux-arm64
     goos: linux
     goarch: arm64
@@ -119,7 +119,7 @@ dockers:
       - "--label=org.opencontainers.image.title={{.ProjectName}}"
       - "--label=org.opencontainers.image.revision={{.FullCommit}}"
       - "--label=org.opencontainers.image.version={{.Version}}"
-      - "--platform=linux/amd64"
+      - "--platform=linux/arm64"
 
 docker_manifests:
   - id: docker-latest
@@ -149,6 +149,7 @@ docker_manifests:
     image_templates:
       - "ghcr.io/cyb3r-jak3/atlas-exporter:v{{ .Major }}-amd64"
       - "ghcr.io/cyb3r-jak3/atlas-exporter:v{{ .Major }}-arm64"
+
   - id: github-tag
     name_template: "ghcr.io/cyb3r-jak3/atlas-exporter:{{ .Tag }}"
     image_templates:
