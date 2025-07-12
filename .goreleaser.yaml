@@ -122,27 +122,35 @@ dockers:
       - "--platform=linux/amd64"
 
 docker_manifests:
-  - id: docker-amd64
-    name_template: "cyb3rjak3/atlas-exporter:{{ .Tag }}"
+  - id: docker-latest
+    name_template: "cyb3rjak3/atlas-exporter:latest"
     image_templates:
       - "cyb3rjak3/atlas-exporter:latest-amd64"
-      - "cyb3rjak3/atlas-exporter:{{ .Tag }}-amd64"
+      - "cyb3rjak3/atlas-exporter:latest-arm64"
+  - id: docker-major
+    name_template: "cyb3rjak3/atlas-exporter:v{{ .Major }}"
+    image_templates:
       - "cyb3rjak3/atlas-exporter:v{{ .Major }}-amd64"
-  - id: docker-arm64
+      - "cyb3rjak3/atlas-exporter:v{{ .Major }}-arm64"
+  - id: docker-tag
     name_template: "cyb3rjak3/atlas-exporter:{{ .Tag }}"
     image_templates:
-      - "cyb3rjak3/atlas-exporter:latest-arm64"
+      - "cyb3rjak3/atlas-exporter:{{ .Tag }}-amd64"
       - "cyb3rjak3/atlas-exporter:{{ .Tag }}-arm64"
-      - "cyb3rjak3/atlas-exporter:v{{ .Major }}-arm64"
-  - id: github-amd64
-    name_template: "ghcr.io/cyb3r-jak3/atlas-exporter:{{ .Tag }}"
+
+  - id: github-latest
+    name_template: "ghcr.io/cyb3r-jak3/atlas-exporter:latest"
     image_templates:
       - "ghcr.io/cyb3r-jak3/atlas-exporter:latest-amd64"
-      - "ghcr.io/cyb3r-jak3/atlas-exporter:{{ .Tag }}-amd64"
+      - "ghcr.io/cyb3r-jak3/atlas-exporter:latest-arm64"
+
+  - id: github-major
+    name_template: "ghcr.io/cyb3r-jak3/atlas-exporter:v{{ .Major }}"
+    image_templates:
       - "ghcr.io/cyb3r-jak3/atlas-exporter:v{{ .Major }}-amd64"
-  - id: github-arm64
+      - "ghcr.io/cyb3r-jak3/atlas-exporter:v{{ .Major }}-arm64"
+  - id: github-tag
     name_template: "ghcr.io/cyb3r-jak3/atlas-exporter:{{ .Tag }}"
     image_templates:
-      - "ghcr.io/cyb3r-jak3/atlas-exporter:latest-arm64"
+      - "ghcr.io/cyb3r-jak3/atlas-exporter:{{ .Tag }}-amd64"
       - "ghcr.io/cyb3r-jak3/atlas-exporter:{{ .Tag }}-arm64"
-      - "ghcr.io/cyb3r-jak3/atlas-exporter:v{{ .Major }}-arm64"

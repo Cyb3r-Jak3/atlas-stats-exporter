@@ -159,6 +159,13 @@ jobs:
           name: atlas-exporter-release
           path: dist/*
 
+      - name: Docker Hub Description
+        uses: peter-evans/dockerhub-description@432a30c9e07499fd01da9f8a49f0faf9e0ca5b77 # v4.0.2
+        with:
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+          repository: cyb3rjak3/atlas-exporter
+
   CreateAttestation:
     if: startsWith(github.ref, 'refs/tags/v')
     needs: Release
