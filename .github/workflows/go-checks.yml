@@ -50,6 +50,9 @@ jobs:
           go-version-file: go.mod
           cache: true
 
+      - name: Install syft
+        uses: anchore/sbom-action/download-syft@cee1b8e05ae5b2593a75e197229729eabaa9f8ec # v0.20.2
+
 #      - name: Install gotestsum
 #        run: go install gotest.tools/gotestsum@v1.12.3
 
