@@ -65,27 +65,31 @@ func buildApp() *cli.Command {
 				Sources: cli.EnvVars("ATLAS_EXPORTER_API_TOKEN"),
 			},
 			&cli.IntFlag{
-				Name:  "timeout",
-				Usage: "Timeout for API requests in seconds",
-				Value: 30,
+				Name:    "timeout",
+				Usage:   "Timeout for API requests in seconds",
+				Value:   30,
+				Sources: cli.EnvVars("ATLAS_EXPORTER_TIMEOUT"),
 			},
 			&cli.BoolFlag{
 				Name:    "tls_enabled",
 				Aliases: []string{"tls"},
 				Usage:   "Enable TLS for the HTTP server",
 				Value:   false,
+				Sources: cli.EnvVars("ATLAS_EXPORTER_TLS_ENABLED"),
 			},
 			&cli.StringFlag{
 				Name:    "tls_cert_chain_path",
 				Aliases: []string{"tls_cert"},
 				Usage:   "Path to the TLS certificate chain file (PEM format)",
 				Value:   "cert.pem",
+				Sources: cli.EnvVars("ATLAS_EXPORTER_TLS_CERT_CHAIN_PATH"),
 			},
 			&cli.StringFlag{
 				Name:    "tls_key_path",
 				Aliases: []string{"tls_key"},
 				Usage:   "Path to the TLS private key file (PEM format)",
 				Value:   "key.pem",
+				Sources: cli.EnvVars("ATLAS_EXPORTER_TLS_KEY_PATH"),
 			},
 			&cli.StringFlag{
 				Name:    "log_level",
@@ -119,7 +123,6 @@ func Run(ctx context.Context, c *cli.Command) error {
 	if logger.Level >= logrus.DebugLevel {
 		apiClientOptions = append(apiClientOptions, atlas.WithDebug(true))
 	}
-	// Initialize the Atlas API client
 	AtlasAPIClient, err = atlas.New(apiClientOptions...)
 	if err != nil {
 		logger.Fatalf("Failed to initialize Atlas API client: %v", err)

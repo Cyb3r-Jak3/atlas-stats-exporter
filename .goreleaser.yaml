@@ -5,11 +5,11 @@ version: 2
 
 before:
   hooks:
-    # You may remove this if you don't use go modules.
     - go mod tidy
 
 builds:
-  - env:
+  - id: atlas-stats-exporter
+    env:
       - CGO_ENABLED=0
     flags:
       - -trimpath
@@ -29,10 +29,12 @@ builds:
       - riscv64
       - mips64
       - mips64le
-    binary: atlas-exporter
     mod_timestamp: '{{ .CommitTimestamp }}'
     ldflags:
-      - -s -w -X pkg/version/info.Version={{.Version}} -X pkg/version/info.Commit={{.Commit}} -X pkg/version/info.Date={{.CommitDate}}
+      - -s -w
+      - -X 'atlas-stats-exporter/pkg/version.Version={{.Version}}'
+      - -X 'atlas-stats-exporter/pkg/version.Commit={{.Commit}}'
+      - -X 'atlas-stats-exporter/pkg/version.Date={{.Date}}'
       - -extldflags "-static"
 
 archives:
@@ -72,11 +74,75 @@ signs:
 sboms:
   - artifacts: archive
 
-
 release:
   draft: true
   footer: >-
-
     ---
 
     Released by [GoReleaser](https://github.com/goreleaser/goreleaser).
+
+dockers:
+  - id: atlas-stats-exporter-linux-amd64
+    goos: linux
+    goarch: amd64
+    use: buildx
+    image_templates:
+      - "cyb3rjak3/atlas-exporter:latest-amd64"
+      - "cyb3rjak3/atlas-exporter:{{ .Tag }}-amd64"
+      - "cyb3rjak3/atlas-exporter:v{{ .Major }}-amd64"
+      - "gcr.io/cyb3r-jak3/atlas-exporter:latest-amd64"
+      - "gcr.io/cyb3r-jak3/atlas-exporter:{{ .Tag }}-amd64"
+      - "gcr.io/cyb3r-jak3/atlas-exporter:v{{ .Major }}-amd64"
+
+    build_flag_templates:
+      - "--pull"
+      - "--label=org.opencontainers.image.created={{.Date}}"
+      - "--label=org.opencontainers.image.title={{.ProjectName}}"
+      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+      - "--label=org.opencontainers.image.version={{.Version}}"
+      - "--platform=linux/arm64"
+  - id: atlas-stats-exporter-linux-arm64
+    goos: linux
+    goarch: arm64
+    use: buildx
+    image_templates:
+      - "cyb3rjak3/atlas-exporter:latest-arm64"
+      - "cyb3rjak3/atlas-exportere:{{ .Tag }}-arm64"
+      - "cyb3rjak3/atlas-exporter:v{{ .Major }}-arm64"
+      - "gcr.io/cyb3r-jak3/atlas-exporter:latest-arm64"
+      - "gcr.io/cyb3r-jak3/atlas-exporter:{{ .Tag }}-arm64"
+      - "gcr.io/cyb3r-jak3/atlas-exporter:v{{ .Major }}-arm64"
+
+    build_flag_templates:
+      - "--pull"
+      - "--label=org.opencontainers.image.created={{.Date}}"
+      - "--label=org.opencontainers.image.title={{.ProjectName}}"
+      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+      - "--label=org.opencontainers.image.version={{.Version}}"
+      - "--platform=linux/amd64"
+
+docker_manifests:
+  - id: docker-amd64
+    name_template: "cyb3rjak3/atlas-exporter:{{ .Tag }}"
+    image_templates:
+      - "cyb3rjak3/atlas-exporter:latest-amd64"
+      - "cyb3rjak3/atlas-exporter:{{ .Tag }}-amd64"
+      - "cyb3rjak3/atlas-exporter:v{{ .Major }}-amd64"
+  - id: docker-arm64
+    name_template: "cyb3rjak3/atlas-exporter:{{ .Tag }}"
+    image_templates:
+      - "cyb3rjak3/atlas-exporter:latest-arm64"
+      - "cyb3rjak3/atlas-exporter:{{ .Tag }}-arm64"
+      - "cyb3rjak3/atlas-exporter:v{{ .Major }}-arm64"
+  - id: github-amd64
+    name_template: "gcr.io/cyb3r-jak3/atlas-exporter:{{ .Tag }}"
+    image_templates:
+      - "gcr.io/cyb3r-jak3/atlas-exporter:latest-amd64"
+      - "gcr.io/cyb3r-jak3/atlas-exporter:{{ .Tag }}-amd64"
+      - "gcr.io/cyb3r-jak3/atlas-exporter:v{{ .Major }}-amd64"
+  - id: github-arm64
+    name_template: "gcr.io/cyb3r-jak3/atlas-exporter:{{ .Tag }}"
+    image_templates:
+      - "gcr.io/cyb3r-jak3/atlas-exporter:latest-arm64"
+      - "gcr.io/cyb3r-jak3/atlas-exporter:{{ .Tag }}-arm64"
+      - "gcr.io/cyb3r-jak3/atlas-exporter:v{{ .Major }}-arm64"
