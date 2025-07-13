@@ -107,7 +107,7 @@ dockers:
     use: buildx
     image_templates:
       - "cyb3rjak3/atlas-exporter:latest-arm64"
-      - "cyb3rjak3/atlas-exportere:{{ .Tag }}-arm64"
+      - "cyb3rjak3/atlas-exporter:{{ .Tag }}-arm64"
       - "cyb3rjak3/atlas-exporter:v{{ .Major }}-arm64"
       - "ghcr.io/cyb3r-jak3/atlas-exporter:latest-arm64"
       - "ghcr.io/cyb3r-jak3/atlas-exporter:{{ .Tag }}-arm64"
