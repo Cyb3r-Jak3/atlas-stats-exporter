@@ -8,9 +8,10 @@ import (
 	"net/http"
 	"net/mail"
 	"os"
-	"runtime/debug"
+	"os/signal"
 	"sort"
 	"strings"
+	"syscall"
 	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
@@ -23,13 +24,10 @@ import (
 var (
 	logger         = logrus.New()
 	AtlasAPIClient *atlas.API
-	versionString  = fmt.Sprintf("%s (built %s)", version.Version, version.Date)
+	versionString  = version.String()
 )
 
 func buildApp() *cli.Command {
-	if buildInfo, available := debug.ReadBuildInfo(); available {
-		versionString = fmt.Sprintf("%s (built %s with %s)", version.Version, version.Date, buildInfo.GoVersion)
-	}
 	app := &cli.Command{
 		Name:    "atlas_exporter",
 		Usage:   "A Prometheus exporter for RIPE Atlas credits and probe statistics",
@@ -98,6 +96,13 @@ func buildApp() *cli.Command {
 				Value:   "info",
 				Sources: cli.EnvVars("ATLAS_EXPORTER_LOG_LEVEL"),
 			},
+			&cli.StringFlag{
+				Name:    "base_url",
+				Usage:   "Base URL for the Atlas API. Useful for testing or custom deployments.",
+				Value:   "https://atlas.ripe.net/api/v2/",
+				Sources: cli.EnvVars("ATLAS_EXPORTER_BASE_URL"),
+				Hidden:  true,
+			},
 		},
 		EnableShellCompletion: true,
 	}
@@ -118,6 +123,7 @@ func Run(ctx context.Context, c *cli.Command) error {
 	apiClientOptions := []atlas.Option{
 		atlas.WithUserAgent("go-atlas-stats-exporter/" + version.Version),
 		atlas.WithAPIToken(apiToken),
+		atlas.WithBaseURL(c.String("base_url")),
 	}
 
 	if logger.Level >= logrus.DebugLevel {
@@ -166,13 +172,33 @@ func Run(ctx context.Context, c *cli.Command) error {
 		Addr:              listenAddress,
 		ReadHeaderTimeout: 5 * time.Second,
 	}
-	if tlsEnabled {
-		tlsCertChainPath := c.String("tls_cert_chain_path")
-		tlsKeyPath := c.String("tls_key_path")
-		return httpServer.ListenAndServeTLS(tlsCertChainPath, tlsKeyPath)
-	}
+	// Channel to listen for errors from ListenAndServe
+	serverErr := make(chan error, 1)
 
-	return httpServer.ListenAndServe()
+	// Start server in a goroutine
+	go func() {
+		if tlsEnabled {
+			serverErr <- httpServer.ListenAndServeTLS(
+				c.String("tls_cert_chain_path"),
+				c.String("tls_key_path"),
+			)
+		} else {
+			serverErr <- httpServer.ListenAndServe()
+		}
+	}()
+
+	// Listen for interrupt signal for graceful shutdown
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
+	select {
+	case <-quit:
+		logger.Info("Shutting down server...")
+		ShutdownContext, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		defer cancel()
+		return httpServer.Shutdown(ShutdownContext)
+	case ServerErr := <-serverErr:
+		return ServerErr
+	}
 }
 
 func main() {

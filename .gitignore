@@ -103,3 +103,4 @@ fabric.properties
 /.env
 # Added by goreleaser init:
 dist/
+junit.xml
