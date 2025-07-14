@@ -59,8 +59,8 @@ jobs:
 
       - name: Test
         run: make test
-        env:
-          ATLAS_EXPORTER_API_TOKEN: ${{ secrets.TEST_ATLAS_EXPORTER_API_TOKEN }}
+#        env:
+#          ATLAS_EXPORTER_API_TOKEN: ${{ secrets.TEST_ATLAS_EXPORTER_API_TOKEN }}
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@18283e04ce6e62d37312384ff67231eb8fd56d24 # v5.4.3

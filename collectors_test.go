@@ -1,10 +1,11 @@
 package main
 
 import (
-	"github.com/prometheus/client_golang/prometheus/testutil"
 	"os"
 	"strings"
 	"testing"
+
+	"github.com/prometheus/client_golang/prometheus/testutil"
 )
 
 func TestBuildInfoCollector(t *testing.T) {
