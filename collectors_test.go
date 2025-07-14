@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"github.com/prometheus/client_golang/prometheus/testutil"
 	"os"
 	"strings"
@@ -23,8 +22,7 @@ func TestCreditsCollector(t *testing.T) {
 	if os.Getenv("ATLAS_EXPORTER_API_TOKEN") == "" {
 		t.Skip("Skipping TestCreditsCollector because ATLAS_EXPORTER_API_TOKEN is not set")
 	}
-	ctx := context.Background()
-	collector := CreditsCollector(ctx, 10)
+	collector := CreditsCollector(t.Context(), 10)
 	if err := testutil.CollectAndCompare(collector, strings.NewReader(`
 # HELP atlas_exporter_credits Current number of credits available in the Atlas account
 # TYPE atlas_exporter_credits gauge
@@ -38,9 +36,8 @@ func TestProbeLastConnectedCollector(t *testing.T) {
 	if os.Getenv("ATLAS_EXPORTER_API_TOKEN") == "" {
 		t.Skip("Skipping TestProbeLastConnectedCollector because ATLAS_EXPORTER_API_TOKEN is not set")
 	}
-	ctx := context.Background()
 	collector := ProbeLastConnectedCollector{
-		ctx:     ctx,
+		ctx:     t.Context(),
 		timeout: 10,
 	}
 	if err := testutil.CollectAndCompare(&collector, strings.NewReader(`
