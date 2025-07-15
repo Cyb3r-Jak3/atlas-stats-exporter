@@ -1,29 +1,34 @@
 package atlas
 
 import (
+	"log"
 	"net/url"
 
 	"github.com/google/go-querystring/query"
 )
 
 type Pagination struct {
-	Count   int `json:"count" url:"count,omitempty"`
-	Page    int `json:"page" url:"page,omitempty"`
-	PerPage int `json:"per_page" url:"per_page,omitempty"`
+	Count    int    `json:"count" url:"-"`
+	Page     int    `url:"page,omitempty"`
+	PerPage  int    `url:"per_page,omitempty"`
+	NextLink string `json:"next,omitempty" url:"-"`
 }
 
 func (p Pagination) Next() Pagination {
-	if p.Count == 0 || p.Page >= (p.Count/p.PerPage) {
-		return Pagination{}
-	}
 	return Pagination{
-		Count:   p.Count,
-		Page:    p.Page + 1,
-		PerPage: p.PerPage,
+		Count:    p.Count,
+		Page:     p.Page + 1,
+		PerPage:  p.PerPage,
+		NextLink: p.NextLink,
 	}
 }
 
 func (p Pagination) Done() bool {
+	//noNext := p.NextLink == ""
+	if p.NextLink != "" {
+		return false
+	}
+	log.Printf("Pagination: Count=%d, Page=%d, PerPage=%d, NextLink=%s\n", p.Count, p.Page, p.PerPage, p.NextLink)
 	if p.Count == 0 || p.Page >= (p.Count/p.PerPage) {
 		return true
 	}

@@ -5,11 +5,14 @@ import (
 	"encoding/json"
 	"fmt"
 	"time"
+
+	"github.com/Cyb3r-Jak3/common/v5"
 )
 
 type ProbeAPIResponse struct {
-	Pagination Pagination  `json:"pagination"`
-	Results    []ProbeInfo `json:"results"`
+	Count   int         `json:"count"`
+	Next    string      `json:"next"`
+	Results []ProbeInfo `json:"results"`
 }
 
 type ProbeInfoGeometry struct {
@@ -50,6 +53,23 @@ type ProbeInfo struct {
 	Type            string            `json:"type"`
 }
 
+type ProbeInfoMeasurement struct {
+	ProbeID       int
+	MeasurementID string               `json:"id"`
+	Type          string               `json:"type"`
+	Description   string               `json:"description"`
+	Status        string               `json:"status"`
+	StartTime     common.ResilientTime `json:"start_time"`
+	StopTime      common.ResilientTime `json:"stop_time"`
+	Target        string               `json:"target"`
+}
+
+type ProbeMeasurementResponse struct {
+	Count   int                    `json:"count"`
+	Next    string                 `json:"next"`
+	Results []ProbeInfoMeasurement `json:"results"`
+}
+
 // LastConnectedTime Helper to get LastConnected as time.Time.
 func (p *ProbeInfo) LastConnectedTime() time.Time {
 	return time.Unix(int64(p.LastConnected), 0)
@@ -59,11 +79,10 @@ func (api *API) GetMyProbes(ctx context.Context) ([]ProbeInfo, error) {
 	if api.APIToken == "" {
 		return nil, ErrMissingToken
 	}
-	nextPage := true
 	var probes []ProbeInfo
-	var P Pagination
-	for nextPage {
-		resp, err := api.request(ctx, "GET", buildURI("/probes/my", P), nil, nil)
+	page := 1
+	for {
+		resp, err := api.request(ctx, "GET", fmt.Sprintf("/probes/my?page=%d", page), nil, nil)
 		if err != nil {
 			return nil, fmt.Errorf("failed to get probes: %w", err)
 		}
@@ -72,11 +91,52 @@ func (api *API) GetMyProbes(ctx context.Context) ([]ProbeInfo, error) {
 			return nil, fmt.Errorf("failed to unmarshal probes response: %w", err)
 		}
 		probes = append(probes, probeResponse.Results...)
-		if probeResponse.Pagination.Done() {
-			nextPage = false
-		} else {
-			P = probeResponse.Pagination.Next()
+		if probeResponse.Count == 0 || probeResponse.Next == "" {
+			break
 		}
+		if probeResponse.Count <= len(probes) {
+			// If the count matches the number of probes we have, we can stop.
+			break
+		}
+		page++
 	}
 	return probes, nil
+}
+
+func (api *API) GetMyProbesMeasurements(ctx context.Context) ([]ProbeInfoMeasurement, error) {
+	if api.APIToken == "" {
+		return nil, ErrMissingToken
+	}
+	myProbes, err := api.GetMyProbes(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get my probes: %w", err)
+	}
+	var probeMeasurements []ProbeInfoMeasurement
+	for _, probe := range myProbes {
+		//var P Pagination
+		page := 1
+		for {
+			resp, respErr := api.request(ctx, "GET", fmt.Sprintf("/probes/%d/measurements?page=%d", probe.ID, page), nil, nil)
+			if respErr != nil {
+				return nil, fmt.Errorf("failed to get probes: %w", err)
+			}
+			var probeResponse ProbeMeasurementResponse
+			if unmarshalErr := json.Unmarshal(resp.Body, &probeResponse); unmarshalErr != nil {
+				return nil, fmt.Errorf("failed to unmarshal probes response: %w", unmarshalErr)
+			}
+			for i := range probeResponse.Results {
+				probeResponse.Results[i].ProbeID = probe.ID
+			}
+			probeMeasurements = append(probeMeasurements, probeResponse.Results...)
+			if probeResponse.Count == 0 || probeResponse.Next == "" {
+				break
+			}
+			if probeResponse.Count <= len(probeMeasurements) {
+				// If the count matches the number of probes we have, we can stop.
+				break
+			}
+			page++
+		}
+	}
+	return probeMeasurements, nil
 }

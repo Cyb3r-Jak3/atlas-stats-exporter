@@ -99,7 +99,7 @@ func buildApp() *cli.Command {
 			&cli.StringFlag{
 				Name:    "base_url",
 				Usage:   "Base URL for the Atlas API. Useful for testing or custom deployments.",
-				Value:   "https://atlas.ripe.net/api/v2/",
+				Value:   "https://atlas.ripe.net/api/v2",
 				Sources: cli.EnvVars("ATLAS_EXPORTER_BASE_URL"),
 				Hidden:  true,
 			},
@@ -141,6 +141,7 @@ func Run(ctx context.Context, c *cli.Command) error {
 		BuildInfoCollector(),
 		CreditsCollector(ctx, scrapeTimeout),
 		ProbeLastConnectedCollectorFactory(ctx, scrapeTimeout),
+		ProbeMeasurementsCollectorFactory(ctx, scrapeTimeout),
 	)
 	logger.Infof("Starting atlas exporter (Version: %s)", version.Version)
 	listenAddress := c.String("listen_address")
