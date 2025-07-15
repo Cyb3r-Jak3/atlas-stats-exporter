@@ -99,3 +99,66 @@ func (c *ProbeLastConnectedCollector) Collect(ch chan<- prometheus.Metric) {
 func ProbeLastConnectedCollectorFactory(ctx context.Context, timeout int) prometheus.Collector {
 	return &ProbeLastConnectedCollector{timeout: timeout, ctx: ctx}
 }
+
+type ProbeMeasurementsCollector struct {
+	ctx     context.Context
+	timeout int
+}
+
+func (c *ProbeMeasurementsCollector) Describe(ch chan<- *prometheus.Desc) {
+	ch <- prometheus.NewDesc(
+		"atlas_exporter_probe_measurements",
+		"Measurements for each probe",
+		[]string{"probe_id", "type", "status"},
+		nil,
+	)
+}
+
+func (c *ProbeMeasurementsCollector) Collect(ch chan<- prometheus.Metric) {
+	ctx, cancel := context.WithTimeout(c.ctx, time.Duration(c.timeout)*time.Second)
+	defer cancel()
+	logger.Debug("Collecting measurements for each probe")
+	resp, err := AtlasAPIClient.GetMyProbesMeasurements(ctx)
+	if err != nil {
+		logger.Errorf("Failed to get probes: %v", err)
+		return
+	}
+	desc := prometheus.NewDesc(
+		"atlas_exporter_probe_measurements",
+		"Measurements for each probe",
+		[]string{"probe_id", "type", "status"},
+		nil,
+	)
+	matrix := make(map[int]map[string]map[string]int)
+	for _, measurement := range resp {
+		probeID := measurement.ProbeID
+		typ := measurement.Type
+		status := measurement.Status
+
+		if _, ok := matrix[probeID]; !ok {
+			matrix[probeID] = make(map[string]map[string]int)
+		}
+		if _, ok := matrix[probeID][typ]; !ok {
+			matrix[probeID][typ] = make(map[string]int)
+		}
+		matrix[probeID][typ][status]++
+	}
+	for probeID, probeMeasurements := range matrix {
+		for typ, statuses := range probeMeasurements {
+			for status, count := range statuses {
+				ch <- prometheus.MustNewConstMetric(
+					desc,
+					prometheus.GaugeValue,
+					float64(count),
+					fmt.Sprintf("%d", probeID),
+					typ,
+					status,
+				)
+			}
+		}
+	}
+}
+
+func ProbeMeasurementsCollectorFactory(ctx context.Context, timeout int) prometheus.Collector {
+	return &ProbeMeasurementsCollector{timeout: timeout, ctx: ctx}
+}

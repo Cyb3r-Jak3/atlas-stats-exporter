@@ -116,12 +116,13 @@ func (api *API) request(ctx context.Context, method, uri string, reqBody io.Read
 	}
 
 	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("could not read response body: %w", err)
+	}
+
 	closeErr := resp.Body.Close()
 	if closeErr != nil {
 		log.Printf("error closing response body: %v", closeErr)
-	}
-	if err != nil {
-		return nil, fmt.Errorf("could not read response body: %w", err)
 	}
 
 	return &APIResponseInfo{
