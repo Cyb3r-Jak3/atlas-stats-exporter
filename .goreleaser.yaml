@@ -81,6 +81,42 @@ release:
 
     Released by [GoReleaser](https://github.com/goreleaser/goreleaser).
 
+
+nfpms:
+  -
+    package_name: atlas-stats-exporter
+    vendor: Cyb3rJak3
+    homepage: https://github.com/Cyb3r-Jak3/atlas-stats-exporter/
+    maintainer: Cyb3rJak3 <git@cyberjake.xyz>
+    description: >-
+      Atlas Stats Exporter is a tool for exporting Atlas stats to various
+      monitoring systems, such as Prometheus, InfluxDB, and more.
+    license: Apache-2.0
+    formats:
+      - apk
+      - deb
+      - rpm
+    provides:
+      - atlas-stats-exporter
+    section: default
+    priority: extra
+    contents:
+      - src: LICENSE
+        dst: /usr/share/licenses/{{ .ProjectName }}/LICENSE.md
+      - src: README.md
+        dst: /usr/share/doc/{{ .ProjectName }}/README.md
+
+blobs:
+  - provider: s3
+    region: auto
+    endpoint: https://8be772befd147a8df540aae0fa15c047.r2.cloudflarestorage.com
+    bucket: public-files
+
+announce:
+  bluesky:
+    enabled: true
+    username: releases.cyberjake.xyz
+
 dockers:
   - id: atlas-stats-exporter-linux-amd64
     goos: linux
