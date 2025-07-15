@@ -16,7 +16,7 @@ var (
 	client *API
 )
 
-func setup(t *testing.T) {
+func setup() {
 	mux = http.NewServeMux()
 	server = httptest.NewServer(mux)
 	client, _ = New(

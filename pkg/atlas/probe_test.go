@@ -7,14 +7,19 @@ import (
 )
 
 func TestAPI_GetMyProbes(t *testing.T) {
-	setup(t)
+	setup()
 	defer teardown()
 
 	// Mock the API response for GetMyProbes
 	mux.HandleFunc("/probes/my", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			t.Errorf("Expected GET request, got %s", r.Method)
+			http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+			return
+		}
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{
+		_, err := w.Write([]byte(`{
    			"count": 1,
 			"next": null,
 			"previous": null,
@@ -110,6 +115,9 @@ func TestAPI_GetMyProbes(t *testing.T) {
         }
 			]
 		}`))
+		if err != nil {
+			return
+		}
 	})
 	apiResponse, err := client.GetMyProbes(context.Background())
 	if err != nil {
