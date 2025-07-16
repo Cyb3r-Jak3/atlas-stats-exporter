@@ -9,7 +9,7 @@ on:
       - 'go.mod'
       - '**.go'
       - .github/workflows/go-checks.yml
-      - '.goreleaser.yml'
+      - '.goreleaser.yaml'
   pull_request:
     branches:
       - main
@@ -17,6 +17,8 @@ on:
       - '**.go'
       - 'go.sum'
       - 'go.mod'
+      - '.github/workflows/go-checks.yml'
+      - '.goreleaser.yaml'
 
 permissions:
   security-events: write
