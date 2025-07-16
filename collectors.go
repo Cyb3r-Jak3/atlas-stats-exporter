@@ -39,9 +39,9 @@ func CreditsCollector(ctx context.Context, timeout int) prometheus.Collector {
 			Help: "Current number of credits available in the Atlas account",
 		},
 		func() float64 {
-			ctx, cancel := context.WithTimeout(ctx, time.Duration(timeout)*time.Second)
+			cancelCtx, cancel := context.WithTimeout(ctx, time.Duration(timeout)*time.Second)
 			defer cancel()
-			resp, err := AtlasAPIClient.GetCredits(ctx)
+			resp, err := AtlasAPIClient.GetCredits(cancelCtx)
 			if err != nil {
 				logger.Errorf("Failed to get credits: %v", err)
 				return 0
