@@ -9,7 +9,7 @@ on:
       - 'go.mod'
       - '**.go'
       - .github/workflows/go-checks.yml
-      - '.goreleaser.yml'
+      - '.goreleaser.yaml'
   pull_request:
     branches:
       - main
