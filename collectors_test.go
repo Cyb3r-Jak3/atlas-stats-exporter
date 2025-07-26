@@ -1,7 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"os"
+	"runtime"
 	"strings"
 	"testing"
 
@@ -10,11 +12,13 @@ import (
 
 func TestBuildInfoCollector(t *testing.T) {
 	collector := BuildInfoCollector()
-	if err := testutil.CollectAndCompare(collector, strings.NewReader(`
+	goVersion := runtime.Version()
+
+	if err := testutil.CollectAndCompare(collector, strings.NewReader(fmt.Sprintf(`
 # HELP atlas_exporter_build_info Build information about the Atlas exporter
 # TYPE atlas_exporter_build_info gauge
-atlas_exporter_build_info{commit="unknown",date="unknown",go_version="go1.24.4",version="unknown"} 1
-`)); err != nil {
+atlas_exporter_build_info{commit="unknown",date="unknown",go_version="%s",version="unknown"} 1
+`, goVersion))); err != nil {
 		t.Errorf("BuildInfoCollector failed: %v", err)
 	}
 }
