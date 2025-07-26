@@ -11,7 +11,7 @@ You can install the exporter by downloading the latest release from the [release
 
 ### Dashboard
 
-There is an example Grafana dashboard available for this exporter. You can find it in the [dashboards directory](/dashboards/basic.json) or you can import it directly into Grafana using the ID `23738` [Grafana Dashboards](https://grafana.com/grafana/dashboards/23738).
+There is an example Grafana dashboard available for this exporter. You can find it in the [dashboards directory](/dashboards/basic.json).
 
 Example image of the dashboard:
 ![Example Dashboard](./dashboards/example.png)
@@ -26,6 +26,12 @@ docker run -d \
   cyb3r-jak3/atlas-stats-exporter:latest
 ```
 
+### Metrics
+
+The exporter exposes the following metrics:
+- `atlas_exporter_credits`: Number of credits available in the RIPE Atlas account.
+- `atlas_exporter_probe_last_connected`: Timestamp of the last time the probe connected to the RIPE Atlas network in seconds since epoch.
+- `atlas_exporter_probe_measurements`: Number of measurements the probe has performed.
 
 ### Full Configuration Variables
 

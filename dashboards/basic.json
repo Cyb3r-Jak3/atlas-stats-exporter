@@ -12,10 +12,16 @@
   "__elements": {},
   "__requires": [
     {
+      "type": "panel",
+      "id": "bargauge",
+      "name": "Bar gauge",
+      "version": ""
+    },
+    {
       "type": "grafana",
       "id": "grafana",
       "name": "Grafana",
-      "version": "12.0.2"
+      "version": "12.1.0"
     },
     {
       "type": "datasource",
@@ -110,7 +116,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": 0
               }
             ]
           },
@@ -120,7 +127,7 @@
       },
       "gridPos": {
         "h": 8,
-        "w": 12,
+        "w": 24,
         "x": 0,
         "y": 0
       },
@@ -138,7 +145,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "12.0.2",
+      "pluginVersion": "12.1.0",
       "targets": [
         {
           "editorMode": "code",
@@ -156,6 +163,20 @@
       "type": "timeseries"
     },
     {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 8
+      },
+      "id": 6,
+      "panels": [],
+      "repeat": "probe",
+      "title": "Probe $probe",
+      "type": "row"
+    },
+    {
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_MIMIR}"
@@ -170,7 +191,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": 0
               }
             ]
           },
@@ -179,10 +201,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 8,
+        "h": 3,
         "w": 24,
         "x": 0,
-        "y": 8
+        "y": 9
       },
       "id": 4,
       "options": {
@@ -202,14 +224,12 @@
         "textMode": "value",
         "wideLayout": true
       },
-      "pluginVersion": "12.0.2",
-      "repeat": "Probe",
-      "repeatDirection": "h",
+      "pluginVersion": "12.1.0",
       "targets": [
         {
           "editorMode": "code",
           "exemplar": false,
-          "expr": "atlas_exporter_probe_last_connected{probe_id=\"$Probe\"}",
+          "expr": "atlas_exporter_probe_last_connected{probe_id=\"$probe\"}",
           "format": "table",
           "instant": true,
           "legendFormat": "{{probe_id}}",
@@ -221,7 +241,7 @@
           }
         }
       ],
-      "title": "Probe ${Probe} Last Connected",
+      "title": "Last Connected",
       "transformations": [
         {
           "id": "organize",
@@ -269,6 +289,79 @@
         }
       ],
       "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_MIMIR}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 24,
+        "x": 0,
+        "y": 12
+      },
+      "id": 5,
+      "options": {
+        "displayMode": "lcd",
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "maxVizHeight": 300,
+        "minVizHeight": 16,
+        "minVizWidth": 8,
+        "namePlacement": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "sizing": "auto",
+        "valueMode": "text"
+      },
+      "pluginVersion": "12.1.0",
+      "repeat": "Probe",
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "atlas_exporter_probe_measurements{probe_id=\"$probe\"}",
+          "legendFormat": "{{type}} - {{status}}",
+          "range": true,
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_MIMIR}"
+          }
+        }
+      ],
+      "title": "Current Probes",
+      "type": "bargauge"
     }
   ],
   "refresh": "1h",
@@ -277,11 +370,14 @@
   "templating": {
     "list": [
       {
+        "allValue": ".*",
+        "allowCustomValue": false,
         "current": {},
         "definition": "label_values(atlas_exporter_probe_last_connected,probe_id)",
         "includeAll": true,
+        "label": "Probe",
         "multi": true,
-        "name": "Probe",
+        "name": "probe",
         "options": [],
         "query": {
           "qryType": 1,
@@ -302,6 +398,6 @@
   "timezone": "browser",
   "title": "RIPE Atlas",
   "uid": "deda02awlaolce",
-  "version": 19,
+  "version": 31,
   "weekStart": ""
 }
