@@ -1,7 +1,6 @@
 package atlas
 
 import (
-	"atlas-stats-exporter/pkg/version"
 	"context"
 	"errors"
 	"fmt"
@@ -10,6 +9,8 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"regexp"
+
+	"github.com/Cyb3r-Jak3/atlas-stats-exporter/pkg/version"
 )
 
 var (

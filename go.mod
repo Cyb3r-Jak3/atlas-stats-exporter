@@ -1,4 +1,4 @@
-module atlas-stats-exporter
+module github.com/Cyb3r-Jak3/atlas-stats-exporter
 
 go 1.24
 

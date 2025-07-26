@@ -1,8 +1,6 @@
 package main
 
 import (
-	"atlas-stats-exporter/pkg/atlas"
-	"atlas-stats-exporter/pkg/version"
 	"context"
 	"fmt"
 	"net/http"
@@ -14,6 +12,8 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/Cyb3r-Jak3/atlas-stats-exporter/pkg/atlas"
+	"github.com/Cyb3r-Jak3/atlas-stats-exporter/pkg/version"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/collectors"
 	"github.com/prometheus/client_golang/prometheus/promhttp"

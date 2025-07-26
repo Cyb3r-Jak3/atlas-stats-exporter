@@ -1,12 +1,12 @@
 package main
 
 import (
-	"atlas-stats-exporter/pkg/version"
 	"context"
 	"fmt"
 	"runtime/debug"
 	"time"
 
+	"github.com/Cyb3r-Jak3/atlas-stats-exporter/pkg/version"
 	"github.com/prometheus/client_golang/prometheus"
 )
 
