@@ -1,5 +1,5 @@
-github.com/Cyb3r-Jak3/common/v5 v5.4.0 h1:GiC8nWmKb0gHZcOWgjzkUDtqGGNnkV/4zQnaoCyqW3w=
-github.com/Cyb3r-Jak3/common/v5 v5.4.0/go.mod h1:x3qyg/87pgRIs7EZU7fjY2gW2BzT8gUBH9KdBAPKTEE=
+github.com/Cyb3r-Jak3/common/v5 v5.5.0 h1:xy6buEnv3TZFWqewB6mJ0ujqRHvZRgvJkMSTGossyVQ=
+github.com/Cyb3r-Jak3/common/v5 v5.5.0/go.mod h1:x3qyg/87pgRIs7EZU7fjY2gW2BzT8gUBH9KdBAPKTEE=
 github.com/beorn7/perks v1.0.1 h1:VlbKKnNfV8bJzeqoa4cOKqO6bYr3WgKZxO8Z16+hsOM=
 github.com/beorn7/perks v1.0.1/go.mod h1:G2ZrVWU2WbWT9wwq4/hrbKbnv/1ERSJQ0ibhJ6rlkpw=
 github.com/cespare/xxhash/v2 v2.3.0 h1:UL815xU9SqsFlibzuggzjXhog7bL6oX9BbNZnL2UFvs=
