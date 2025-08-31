@@ -1,13 +1,13 @@
 module github.com/Cyb3r-Jak3/atlas-stats-exporter
 
-go 1.24
+go 1.25
 
 require (
 	github.com/Cyb3r-Jak3/common/v5 v5.5.0
 	github.com/google/go-querystring v1.1.0
-	github.com/prometheus/client_golang v1.22.0
+	github.com/prometheus/client_golang v1.23.0
 	github.com/sirupsen/logrus v1.9.3
-	github.com/urfave/cli/v3 v3.3.8
+	github.com/urfave/cli/v3 v3.4.1
 )
 
 require (
@@ -19,7 +19,7 @@ require (
 	github.com/prometheus/client_model v0.6.2 // indirect
 	github.com/prometheus/common v0.65.0 // indirect
 	github.com/prometheus/procfs v0.17.0 // indirect
-	golang.org/x/sys v0.34.0 // indirect
-	google.golang.org/protobuf v1.36.6 // indirect
+	golang.org/x/sys v0.35.0 // indirect
+	google.golang.org/protobuf v1.36.8 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
