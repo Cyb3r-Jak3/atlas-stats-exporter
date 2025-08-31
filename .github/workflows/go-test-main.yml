@@ -1,4 +1,4 @@
-name: go-test-main.yml
+name: Main Test Coverage
 on:
   push:
     branches:
