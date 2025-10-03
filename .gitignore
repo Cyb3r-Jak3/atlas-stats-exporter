@@ -104,3 +104,4 @@ fabric.properties
 # Added by goreleaser init:
 dist/
 junit.xml
+.idea/copilot.data.migration.*.xml

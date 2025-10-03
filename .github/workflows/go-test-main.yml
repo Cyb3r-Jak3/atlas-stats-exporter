@@ -8,6 +8,14 @@ on:
       - 'go.sum'
       - 'go.mod'
       - '.github/workflows/go-test-main.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '**.go'
+      - 'go.sum'
+      - 'go.mod'
+      - '.github/workflows/go-test-main.yml'
 
 permissions:
   contents: read
