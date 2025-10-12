@@ -16,7 +16,7 @@
         <ENTRY IS_ENABLED="true" PARSER="env" IS_EXECUTABLE="false" PATH=".env" />
       </ENTRIES>
     </EXTENSION>
-    <kind value="PACKAGE" />
+    <kind value="DIRECTORY" />
     <package value="atlas-stats-exporter" />
     <directory value="$PROJECT_DIR$" />
     <filePath value="$PROJECT_DIR$" />

@@ -43,7 +43,7 @@ func CreditsCollector(ctx context.Context, timeout int) prometheus.Collector {
 			defer cancel()
 			resp, err := AtlasAPIClient.GetCredits(cancelCtx)
 			if err != nil {
-				logger.Errorf("Failed to get credits: %v", err)
+				logger.WithError(err).Error("Failed to get credits")
 				return 0
 			}
 			if resp == nil {
@@ -75,7 +75,7 @@ func (c *ProbeLastConnectedCollector) Collect(ch chan<- prometheus.Metric) {
 	logger.Debug("Collecting last connected time (Unix timestamp) for each probe")
 	resp, err := AtlasAPIClient.GetMyProbes(ctx)
 	if err != nil {
-		logger.Errorf("Failed to get probes: %v", err)
+		logger.WithError(err).Error("Failed to get probe last connected")
 		return
 	}
 	desc := prometheus.NewDesc(
@@ -120,7 +120,7 @@ func (c *ProbeMeasurementsCollector) Collect(ch chan<- prometheus.Metric) {
 	logger.Debug("Collecting measurements for each probe")
 	resp, err := AtlasAPIClient.GetMyProbesMeasurements(ctx)
 	if err != nil {
-		logger.Errorf("Failed to get probes: %v", err)
+		logger.WithError(err).Error("Failed to get probe measurements")
 		return
 	}
 	desc := prometheus.NewDesc(
