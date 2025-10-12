@@ -36,6 +36,9 @@ builds:
       - -X 'atlas-stats-exporter/pkg/version.Commit={{.Commit}}'
       - -X 'atlas-stats-exporter/pkg/version.Date={{.Date}}'
       - -extldflags "-static"
+    ignore:
+      - goarch: 'arm'
+        goos: windows
 
 archives:
   - formats: ['tar.xz']
@@ -44,7 +47,10 @@ archives:
     format_overrides:
       - goos: windows
         formats: ['zip']
-    name_template: "{{ .Binary }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}{{ if .Mips }}_{{ .Mips }}{{ end }}"
+    name_template: "{{ .Binary }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}{{ if .Mips }}_{{ .Mips }}{{ end }}"
+  - id: binary
+    formats: [ 'binary' ]
+    name_template: "{{ .Binary }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}{{ if .Mips }}_{{ .Mips }}{{ end }}"
 
 checksum:
   name_template: 'checksums.txt'
@@ -83,14 +89,14 @@ release:
 
 
 nfpms:
-  -
-    package_name: atlas-stats-exporter
+  - package_name: atlas-stats-exporter
     vendor: Cyb3rJak3
     homepage: https://github.com/Cyb3r-Jak3/atlas-stats-exporter/
     maintainer: Cyb3rJak3 <git@cyberjake.xyz>
     description: >-
       Atlas Stats Exporter is a tool for exporting Atlas stats to various
-      monitoring systems, such as Prometheus, InfluxDB, and more.
+      backends, including Prometheus. It is designed to be run as a service and
+      can be configured via a configuration file or environment variables.
     license: Apache-2.0
     formats:
       - apk
@@ -105,115 +111,41 @@ nfpms:
         dst: /usr/share/licenses/{{ .ProjectName }}/LICENSE.md
       - src: README.md
         dst: /usr/share/doc/{{ .ProjectName }}/README.md
+    builds:
+      - default
 
 blobs:
   - provider: s3
     region: auto
     endpoint: https://8be772befd147a8df540aae0fa15c047.r2.cloudflarestorage.com
     bucket: public-files
+    ids:
+      - default
 
-#announce:
-#  bluesky:
-#    enabled: true
-#    username: releases.cyberjake.xyz
+announce:
+  bluesky:
+    enabled: true
+    username: "releases.cyberjake.xyz"
 
-dockers:
-  - id: atlas-stats-exporter-linux-amd64
-    goos: linux
-    goarch: amd64
-    use: buildx
-    image_templates:
-      - "cyb3rjak3/atlas-exporter:latest-amd64"
-      - "cyb3rjak3/atlas-exporter:{{ .Tag }}-amd64"
-      - "cyb3rjak3/atlas-exporter:v{{ .Major }}-amd64"
-      - "ghcr.io/cyb3r-jak3/atlas-exporter:latest-amd64"
-      - "ghcr.io/cyb3r-jak3/atlas-exporter:{{ .Tag }}-amd64"
-      - "ghcr.io/cyb3r-jak3/atlas-exporter:v{{ .Major }}-amd64"
-
-    build_flag_templates:
-      - "--pull"
-      - "--label=org.opencontainers.image.created={{.Date}}"
-      - "--label=org.opencontainers.image.title={{.ProjectName}}"
-      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
-      - "--label=org.opencontainers.image.version={{.Version}}"
-      - "--platform=linux/amd64"
-
-  - id: atlas-stats-exporter-linux-arm64
-    goos: linux
-    goarch: arm64
-    use: buildx
-    image_templates:
-      - "cyb3rjak3/atlas-exporter:latest-arm64"
-      - "cyb3rjak3/atlas-exporter:{{ .Tag }}-arm64"
-      - "cyb3rjak3/atlas-exporter:v{{ .Major }}-arm64"
-      - "ghcr.io/cyb3r-jak3/atlas-exporter:latest-arm64"
-      - "ghcr.io/cyb3r-jak3/atlas-exporter:{{ .Tag }}-arm64"
-      - "ghcr.io/cyb3r-jak3/atlas-exporter:v{{ .Major }}-arm64"
-
-    build_flag_templates:
-      - "--pull"
-      - "--label=org.opencontainers.image.created={{.Date}}"
-      - "--label=org.opencontainers.image.title={{.ProjectName}}"
-      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
-      - "--label=org.opencontainers.image.version={{.Version}}"
-      - "--platform=linux/arm64"
-
-  - id: atlas-stats-exporter-linux-arm
-    goos: linux
-    goarch: arm
-    use: buildx
-    image_templates:
-      - "cyb3rjak3/atlas-exporter:latest-arm"
-      - "cyb3rjak3/atlas-exporter:{{ .Tag }}-arm"
-      - "cyb3rjak3/atlas-exporter:v{{ .Major }}-arm"
-      - "ghcr.io/cyb3r-jak3/atlas-exporter:latest-arm"
-      - "ghcr.io/cyb3r-jak3/atlas-exporter:{{ .Tag }}-arm"
-      - "ghcr.io/cyb3r-jak3/atlas-exporter:v{{ .Major }}-arm"
-
-    build_flag_templates:
-      - "--pull"
-      - "--label=org.opencontainers.image.created={{.Date}}"
-      - "--label=org.opencontainers.image.title={{.ProjectName}}"
-      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
-      - "--label=org.opencontainers.image.version={{.Version}}"
-      - "--platform=linux/arm"
-
-docker_manifests:
-  - id: docker-latest
-    name_template: "cyb3rjak3/atlas-exporter:latest"
-    image_templates:
-      - "cyb3rjak3/atlas-exporter:latest-amd64"
-      - "cyb3rjak3/atlas-exporter:latest-arm64"
-      - "cyb3rjak3/atlas-exporter:latest-arm"
-  - id: docker-major
-    name_template: "cyb3rjak3/atlas-exporter:v{{ .Major }}"
-    image_templates:
-      - "cyb3rjak3/atlas-exporter:v{{ .Major }}-amd64"
-      - "cyb3rjak3/atlas-exporter:v{{ .Major }}-arm64"
-      - "cyb3rjak3/atlas-exporter:v{{ .Major }}-arm"
-  - id: docker-tag
-    name_template: "cyb3rjak3/atlas-exporter:{{ .Tag }}"
-    image_templates:
-      - "cyb3rjak3/atlas-exporter:{{ .Tag }}-amd64"
-      - "cyb3rjak3/atlas-exporter:{{ .Tag }}-arm64"
-      - "cyb3rjak3/atlas-exporter:{{ .Tag }}-arm"
-
-  - id: github-latest
-    name_template: "ghcr.io/cyb3r-jak3/atlas-exporter:latest"
-    image_templates:
-      - "ghcr.io/cyb3r-jak3/atlas-exporter:latest-amd64"
-      - "ghcr.io/cyb3r-jak3/atlas-exporter:latest-arm64"
-      -  "ghcr.io/cyb3r-jak3/atlas-exporter:latest-arm"
-  - id: github-major
-    name_template: "ghcr.io/cyb3r-jak3/atlas-exporter:v{{ .Major }}"
-    image_templates:
-      - "ghcr.io/cyb3r-jak3/atlas-exporter:v{{ .Major }}-amd64"
-      - "ghcr.io/cyb3r-jak3/atlas-exporter:v{{ .Major }}-arm64"
-      - "ghcr.io/cyb3r-jak3/atlas-exporter:v{{ .Major }}-arm"
-
-  - id: github-tag
-    name_template: "ghcr.io/cyb3r-jak3/atlas-exporter:{{ .Tag }}"
-    image_templates:
-      - "ghcr.io/cyb3r-jak3/atlas-exporter:{{ .Tag }}-amd64"
-      - "ghcr.io/cyb3r-jak3/atlas-exporter:{{ .Tag }}-arm64"
-      - "ghcr.io/cyb3r-jak3/atlas-exporter:{{ .Tag }}-arm"
+dockers_v2:
+  -
+    images:
+      - "cyb3rjak3/atlas-exporter"
+      - "ghcr.io/cyb3r-jak3/atlas-exporter"
+    platforms:
+      - linux/amd64
+      - linux/arm64
+    tags:
+      - "v{{ .Version }}"
+      - "latest"
+      - "v{{ .Major }}"
+      - "{{ .Tag }}"
+    labels:
+      "org.opencontainers.image.description": "Atlas Stats Exporter is a prometheus exporter for RIPE Atlas"
+      "org.opencontainers.image.created": "{{.Date}}"
+      "org.opencontainers.image.name": "{{.ProjectName}}"
+      "org.opencontainers.image.revision": "{{.FullCommit}}"
+      "org.opencontainers.image.version": "{{.Version}}"
+      "org.opencontainers.image.source": "{{.GitURL}}"
+      "org.opencontainers.image.vendor": "Cyb3rJak3"
+      "org.opencontainers.image.licenses": "Apache-2.0"

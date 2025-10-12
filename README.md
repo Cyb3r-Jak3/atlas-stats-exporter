@@ -9,7 +9,9 @@ This is a Prometheus exporter for RIPE Atlas accounts, and probes. It does not c
 
 You can install the exporter by downloading the latest release from the [releases page](https://github.com/Cyb3r-Jak3/atlas-stats-exporter/releases/latest), pulling the Docker image from Docker Hub or GitHub Container Registry, or by building it from source.
 
-**Note**: The docker images only support linux/amd64, linux/arm64 and linux/arm architectures. If you need a different architecture, you will need to download the binary from the releases page or build it from source.
+The archive downloads previously had the version number in the name, for example `atlas-stats-exporter_1.2.3_windows_amd64.zip`. This has been deprecated and the new naming convention is just `atlas-stats-exporter_windows_amd64.zip`.
+
+**Note**: As of v2.0.0, the docker images only support linux/amd64 and linux/arm64 architectures. If you need a different architecture, you will need to download the binary from the releases page or build it from source.
 
 ### Dashboard
 
