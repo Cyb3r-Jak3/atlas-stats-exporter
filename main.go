@@ -148,7 +148,7 @@ func Run(ctx context.Context, c *cli.Command) error {
 	metricsPath := c.String("metrics_path")
 	tlsEnabled := c.Bool("tls_enabled")
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		_, err := w.Write([]byte(`<html>
+		_, handleErr := w.Write([]byte(`<html>
 					<head><title>Cyb3r-Jak3 RIPE Atlas Exporter (Version ` + version.Version + `)</title></head>
 					<body>
 					<h1> Cyb3r-Jak3 RIPE Atlas Exporter</h1>
@@ -160,8 +160,16 @@ func Run(ctx context.Context, c *cli.Command) error {
 					</body>
 					<footer> Commit: ` + version.Commit + `, Date: ` + version.Date + `, Version: ` + version.Version + `</footer>
 					</html>`))
-		if err != nil {
-			logger.Errorf("Failed to write response: %v", err)
+		if handleErr != nil {
+			logger.Errorf("Failed to write response: %v", handleErr)
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
+	})
+	http.HandleFunc("/version", func(w http.ResponseWriter, r *http.Request) {
+		_, handleErr := w.Write([]byte(versionString))
+		if handleErr != nil {
+			logger.Errorf("Failed to write response: %v", handleErr)
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			return
 		}

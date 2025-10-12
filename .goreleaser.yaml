@@ -3,10 +3,6 @@
 
 version: 2
 
-before:
-  hooks:
-    - go mod tidy
-
 builds:
   - id: atlas-stats-exporter
     env:
@@ -32,9 +28,9 @@ builds:
     mod_timestamp: '{{ .CommitTimestamp }}'
     ldflags:
       - -s -w
-      - -X 'atlas-stats-exporter/pkg/version.Version={{.Version}}'
-      - -X 'atlas-stats-exporter/pkg/version.Commit={{.Commit}}'
-      - -X 'atlas-stats-exporter/pkg/version.Date={{.Date}}'
+      - -X 'github.com/Cyb3r-Jak3/atlas-stats-exporter/pkg/version.Version={{.Version}}'
+      - -X 'github.com/Cyb3r-Jak3/atlas-stats-exporter/pkg/version.Commit={{.Commit}}'
+      - -X 'github.com/Cyb3r-Jak3/atlas-stats-exporter/pkg/version.Date={{.Date}}'
       - -extldflags "-static"
     ignore:
       - goarch: 'arm'
