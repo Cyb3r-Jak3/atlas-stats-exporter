@@ -84,7 +84,7 @@ func (api *API) GetMyProbes(ctx context.Context) ([]ProbeInfo, error) {
 	for {
 		resp, err := api.request(ctx, "GET", fmt.Sprintf("/probes/my?page=%d", page), nil, nil)
 		if err != nil {
-			return nil, fmt.Errorf("failed to get probes: %w", err)
+			return nil, fmt.Errorf("API request failed: %w", err)
 		}
 		var probeResponse ProbeAPIResponse
 		if err := json.Unmarshal(resp.Body, &probeResponse); err != nil {
@@ -109,30 +109,26 @@ func (api *API) GetMyProbesMeasurements(ctx context.Context) ([]ProbeInfoMeasure
 	}
 	myProbes, err := api.GetMyProbes(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get my probes: %w", err)
+		return nil, fmt.Errorf("API request failed: %w", err)
 	}
 	var probeMeasurements []ProbeInfoMeasurement
 	for _, probe := range myProbes {
-		//var P Pagination
 		page := 1
 		for {
 			resp, respErr := api.request(ctx, "GET", fmt.Sprintf("/probes/%d/measurements?page=%d", probe.ID, page), nil, nil)
 			if respErr != nil {
-				return nil, fmt.Errorf("failed to get probes: %w", err)
+				return nil, fmt.Errorf("API request failed to get probe, %d: %w", probe.ID, err)
 			}
-			var probeResponse ProbeMeasurementResponse
-			if unmarshalErr := json.Unmarshal(resp.Body, &probeResponse); unmarshalErr != nil {
-				return nil, fmt.Errorf("failed to unmarshal probes response: %w", unmarshalErr)
+			var probeMeasurementResponse ProbeMeasurementResponse
+			if unmarshalErr := json.Unmarshal(resp.Body, &probeMeasurementResponse); unmarshalErr != nil {
+				return nil, fmt.Errorf("failed to unmarshal probe measurement response: %w", unmarshalErr)
 			}
-			for i := range probeResponse.Results {
-				probeResponse.Results[i].ProbeID = probe.ID
+			for i := range probeMeasurementResponse.Results {
+				probeMeasurementResponse.Results[i].ProbeID = probe.ID
 			}
-			probeMeasurements = append(probeMeasurements, probeResponse.Results...)
-			if probeResponse.Count == 0 || probeResponse.Next == "" {
-				break
-			}
-			if probeResponse.Count <= len(probeMeasurements) {
-				// If the count matches the number of probes we have, we can stop.
+			probeMeasurements = append(probeMeasurements, probeMeasurementResponse.Results...)
+			if probeMeasurementResponse.Count == 0 || probeMeasurementResponse.Next == "" {
+				fmt.Println("No more measurements or next link is empty")
 				break
 			}
 			page++
