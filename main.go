@@ -65,7 +65,7 @@ func buildApp() *cli.Command {
 			&cli.IntFlag{
 				Name:    "timeout",
 				Usage:   "Timeout for API requests in seconds",
-				Value:   30,
+				Value:   60,
 				Sources: cli.EnvVars("ATLAS_EXPORTER_TIMEOUT"),
 			},
 			&cli.BoolFlag{

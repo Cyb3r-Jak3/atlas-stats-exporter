@@ -87,15 +87,11 @@ func (api *API) GetMyProbes(ctx context.Context) ([]ProbeInfo, error) {
 			return nil, fmt.Errorf("API request failed: %w", err)
 		}
 		var probeResponse ProbeAPIResponse
-		if err := json.Unmarshal(resp.Body, &probeResponse); err != nil {
-			return nil, fmt.Errorf("failed to unmarshal probes response: %w", err)
+		if unmarshalErr := json.Unmarshal(resp.Body, &probeResponse); unmarshalErr != nil {
+			return nil, fmt.Errorf("failed to unmarshal probes response: %w", unmarshalErr)
 		}
 		probes = append(probes, probeResponse.Results...)
 		if probeResponse.Count == 0 || probeResponse.Next == "" {
-			break
-		}
-		if probeResponse.Count <= len(probes) {
-			// If the count matches the number of probes we have, we can stop.
 			break
 		}
 		page++
@@ -117,7 +113,7 @@ func (api *API) GetMyProbesMeasurements(ctx context.Context) ([]ProbeInfoMeasure
 		for {
 			resp, respErr := api.request(ctx, "GET", fmt.Sprintf("/probes/%d/measurements?page=%d", probe.ID, page), nil, nil)
 			if respErr != nil {
-				return nil, fmt.Errorf("API request failed to get probe, %d: %w", probe.ID, err)
+				return nil, fmt.Errorf("API request failed to get probe measurements, %d: %w", probe.ID, respErr)
 			}
 			var probeMeasurementResponse ProbeMeasurementResponse
 			if unmarshalErr := json.Unmarshal(resp.Body, &probeMeasurementResponse); unmarshalErr != nil {
@@ -128,7 +124,6 @@ func (api *API) GetMyProbesMeasurements(ctx context.Context) ([]ProbeInfoMeasure
 			}
 			probeMeasurements = append(probeMeasurements, probeMeasurementResponse.Results...)
 			if probeMeasurementResponse.Count == 0 || probeMeasurementResponse.Next == "" {
-				fmt.Println("No more measurements or next link is empty")
 				break
 			}
 			page++
