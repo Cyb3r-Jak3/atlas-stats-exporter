@@ -166,7 +166,7 @@ func Run(ctx context.Context, c *cli.Command) error {
 			return
 		}
 	})
-	http.HandleFunc("/version", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/version", func(w http.ResponseWriter, _ *http.Request) {
 		_, handleErr := w.Write([]byte(versionString))
 		if handleErr != nil {
 			logger.Errorf("Failed to write response: %v", handleErr)

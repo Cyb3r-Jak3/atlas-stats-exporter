@@ -30,7 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GO111MODULE: on
-      GOTESTSUM_VERSION: v1.12.3
+      GOTESTSUM_VERSION: v1.13.0
 
     steps:
 
@@ -56,8 +56,8 @@ jobs:
         with:
           use_oidc: true
 
-      - name: Upload test results to Codecov
-        if: ${{ !cancelled() }}
-        uses: codecov/test-results-action@47f89e9acb64b76debcd5ea40642d25a4adced9f # v1.1.1
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@5a1091511ad55cbe89839c7260b706298ca349f7 # v5.5.1
         with:
           use_oidc: true
+          report_type: "test_results"

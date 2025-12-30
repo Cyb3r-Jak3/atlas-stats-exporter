@@ -1,6 +1,6 @@
 # RIPE Atlas Prometheus Exporter
 ![GitHub Release](https://img.shields.io/github/v/release/Cyb3r-Jak3/atlas-stats-exporter) ![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/Cyb3r-Jak3/atlas-stats-exporter)  
-[![Golanglint CI](https://github.com/Cyb3r-Jak3/atlas-stats-exporter/actions/workflows/golangci-lint.yml/badge.svg)](https://github.com/Cyb3r-Jak3/atlas-stats-exporter/actions/workflows/golangci-lint.yml) [![Go Checks](https://github.com/Cyb3r-Jak3/atlas-stats-exporter/actions/workflows/go-checks.yml/badge.svg)](https://github.com/Cyb3r-Jak3/atlas-stats-exporter/actions/workflows/go-checks.yml) 
+[![Golanglint CI](https://github.com/Cyb3r-Jak3/atlas-stats-exporter/actions/workflows/golangci-lint.yml/badge.svg)](https://github.com/Cyb3r-Jak3/atlas-stats-exporter/actions/workflows/golangci-lint.yml) [![Go Checks](https://github.com/Cyb3r-Jak3/atlas-stats-exporter/actions/workflows/go-checks.yml/badge.svg)](https://github.com/Cyb3r-Jak3/atlas-stats-exporter/actions/workflows/go-checks.yml) [![codecov](https://codecov.io/gh/Cyb3r-Jak3/atlas-stats-exporter/graph/badge.svg?token=RdDQjmipTA)](https://codecov.io/gh/Cyb3r-Jak3/atlas-stats-exporter) 
 
 This is a Prometheus exporter for RIPE Atlas accounts, and probes. It does not currently support RIPE Atlas measurements, but plans to in the future. This exporter does require a RIPE Atlas account, and the API key for that account. You can follow the [docs](https://atlas.ripe.net/docs/howtos/keys) to create an API key for your account.
 
