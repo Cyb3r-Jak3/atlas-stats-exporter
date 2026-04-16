@@ -148,6 +148,10 @@ func Run(ctx context.Context, c *cli.Command) error {
 	metricsPath := c.String("metrics_path")
 	tlsEnabled := c.Bool("tls_enabled")
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+		w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
+		w.Header().Set("Pragma", "no-cache")
+		w.Header().Set("X-Content-Type-Options", "nosniff")
 		_, handleErr := w.Write([]byte(`<html>
 					<head><title>Cyb3r-Jak3 RIPE Atlas Exporter (Version ` + version.Version + `)</title></head>
 					<body>

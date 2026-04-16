@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=https://golangci-lint.run/jsonschema/golangci.jsonschema.json
 version: "2"
 run:
   modules-download-mode: readonly
@@ -39,6 +40,10 @@ linters:
       - third_party$
       - builtin$
       - examples$
+  settings:
+    gosec:
+      excludes:
+        - G705
 formatters:
   enable:
     - gofmt

@@ -12,7 +12,7 @@ snapshot:
 	goreleaser --snapshot --clean --skip=publish,sign
 
 lint:
-	golangci-lint run --config .golangci-lint.yml ./...
+	golangci-lint run
 
 test:
 	@gotestsum --format testname --junitfile junit.xml -- -coverprofile=cover.out ./...
