@@ -178,6 +178,25 @@ func Run(ctx context.Context, c *cli.Command) error {
 			return
 		}
 	})
+	http.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
+		_, rootDataErr := AtlasAPIClient.GetRootData(r.Context()) // Check if API is reachable
+		if rootDataErr != nil {
+			logger.Errorf("Failed to get root data: %v", rootDataErr)
+			w.WriteHeader(503)
+			_, handleErr := w.Write([]byte("Failed to get root data"))
+			if handleErr != nil {
+				logger.Errorf("Failed to write response: %v", handleErr)
+			}
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+		_, handleErr := w.Write([]byte("OK"))
+		if handleErr != nil {
+			logger.Errorf("Failed to write response: %v", handleErr)
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
+	})
 	http.Handle(metricsPath, promhttp.HandlerFor(reg, promhttp.HandlerOpts{}))
 
 	logger.Infof("Listening for %s on %s (TLS: %v)", metricsPath, listenAddress, tlsEnabled)
