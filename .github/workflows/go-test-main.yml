@@ -30,6 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GO111MODULE: on
+      # renovate: datasource=github-tags depName=gotestyourself/gotestsum
       GOTESTSUM_VERSION: v1.13.0
 
     steps:
