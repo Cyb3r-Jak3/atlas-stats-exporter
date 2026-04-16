@@ -6,7 +6,7 @@ require (
 	github.com/Cyb3r-Jak3/common/v5 v5.5.0
 	github.com/google/go-querystring v1.2.0
 	github.com/prometheus/client_golang v1.23.2
-	github.com/sirupsen/logrus v1.9.3
+	github.com/sirupsen/logrus v1.9.4
 	github.com/urfave/cli/v3 v3.6.1
 )
 
