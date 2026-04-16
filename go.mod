@@ -3,7 +3,7 @@ module github.com/Cyb3r-Jak3/atlas-stats-exporter
 go 1.25
 
 require (
-	github.com/Cyb3r-Jak3/common/v5 v5.5.0
+	github.com/Cyb3r-Jak3/common/v5 v5.6.0
 	github.com/google/go-querystring v1.2.0
 	github.com/prometheus/client_golang v1.23.2
 	github.com/sirupsen/logrus v1.9.4
