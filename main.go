@@ -14,6 +14,7 @@ import (
 
 	"github.com/Cyb3r-Jak3/atlas-stats-exporter/pkg/atlas"
 	"github.com/Cyb3r-Jak3/atlas-stats-exporter/pkg/version"
+	"github.com/Cyb3r-Jak3/common/v5"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/collectors"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -95,6 +96,19 @@ func buildApp() *cli.Command {
 				Usage:   "Set the logging level (debug, info, warn, error, fatal, panic)",
 				Value:   "info",
 				Sources: cli.EnvVars("ATLAS_EXPORTER_LOG_LEVEL"),
+			},
+			&cli.StringFlag{
+				Name:    "log_format",
+				Aliases: []string{"lf"},
+				Usage:   "Set the logging format (text, json)",
+				Value:   "text",
+				Sources: cli.EnvVars("ATLAS_EXPORTER_LOG_FORMAT"),
+				Validator: func(s string) error {
+					if !common.StringSearch(s, []string{"text", "json"}) {
+						return fmt.Errorf("invalid log format: %s, must be 'text' or 'json'", s)
+					}
+					return nil
+				},
 			},
 			&cli.StringFlag{
 				Name:    "base_url",
@@ -243,6 +257,22 @@ func main() {
 }
 
 func SetLogLevel(c *cli.Command) error {
+	switch c.String("log_format") {
+	case "json":
+		logger.SetFormatter(&logrus.JSONFormatter{
+			TimestampFormat: time.RFC3339,
+			FieldMap: logrus.FieldMap{
+				logrus.FieldKeyTime:  "timestamp",
+				logrus.FieldKeyLevel: "level",
+				logrus.FieldKeyMsg:   "message",
+			},
+		})
+	default:
+		logger.SetFormatter(&logrus.TextFormatter{
+			TimestampFormat: time.RFC3339,
+			FullTimestamp:   true,
+		})
+	}
 	logLevel := c.String("log_level")
 	level, err := logrus.ParseLevel(logLevel)
 	if err != nil {
