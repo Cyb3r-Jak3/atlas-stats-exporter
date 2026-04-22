@@ -149,7 +149,7 @@ jobs:
         with:
           name: atlas-exporter-release
           path: dist/*
-          retention-days: 7
+          retention-days: 1
 
       - name: Docker Hub Description
         uses: peter-evans/dockerhub-description@1b9a80c056b620d92cedb9d9b5a223409c68ddfa # v5.0.0
