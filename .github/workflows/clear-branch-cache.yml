@@ -5,7 +5,7 @@ on:
 
 jobs:
   clear-caches:
-    runs-on: cyb3r-jak3-valorant-metrics-renderer
+    runs-on: ubuntu-latest
     permissions:
       contents: read
       pull-requests: read
