@@ -59,9 +59,8 @@ type APIResponseInfo struct {
 	Headers    http.Header
 }
 
-// request makes an HTTP request to the given API endpoint, returning the raw
-// *http.Response, or an error if one occurred. The caller is responsible for
-// closing the response body.
+// request makes an HTTP request to the given API endpoint, returning the
+// *APIResponseInfo, or an error if one occurred.
 func (api *API) request(ctx context.Context, method, uri string, reqBody io.Reader, headers http.Header) (*APIResponseInfo, error) {
 	req, err := http.NewRequestWithContext(ctx, method, api.BaseURL+uri, reqBody)
 	if err != nil {
@@ -107,6 +106,7 @@ func (api *API) request(ctx context.Context, method, uri string, reqBody io.Read
 	if err != nil {
 		return nil, fmt.Errorf("HTTP request failed: %w", err)
 	}
+	defer resp.Body.Close()
 
 	if api.Debug {
 		dump, httpDumpErr := httputil.DumpResponse(resp, true)
@@ -119,11 +119,6 @@ func (api *API) request(ctx context.Context, method, uri string, reqBody io.Read
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("could not read response body: %w", err)
-	}
-
-	closeErr := resp.Body.Close()
-	if closeErr != nil {
-		log.Printf("error closing response body: %v", closeErr)
 	}
 
 	return &APIResponseInfo{
