@@ -44,6 +44,8 @@ linters:
     gosec:
       excludes:
         - G705
+    goconst:
+      min-occurrences: 5
 formatters:
   enable:
     - gofmt
