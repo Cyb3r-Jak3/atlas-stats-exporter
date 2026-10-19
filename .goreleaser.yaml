@@ -3,6 +3,10 @@
 
 version: 2
 
+before:
+  hooks:
+    - go mod tidy
+
 builds:
   - id: atlas-stats-exporter
     env:
@@ -120,8 +124,7 @@ announce:
     username: "releases.cyberjake.xyz"
 
 dockers_v2:
-  -
-    images:
+  - images:
       - "cyb3rjak3/atlas-exporter"
       - "ghcr.io/cyb3r-jak3/atlas-exporter"
     platforms:
