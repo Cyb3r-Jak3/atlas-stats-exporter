@@ -7,14 +7,14 @@ on:
     paths:
       - '**.go'
       - .github/workflows/golangci-lint.yml
-      - ../../.golangci.yml
+      - .golangci.yml
   pull_request:
     branches:
       - main
     paths:
       - '**.go'
       - .github/workflows/golangci-lint.yml
-      - ../../.golangci.yml
+      - .golangci.yml
 
 jobs:
   Lint:
