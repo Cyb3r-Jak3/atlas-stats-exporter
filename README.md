@@ -36,6 +36,12 @@ The exporter exposes the following metrics:
 - `atlas_exporter_credits`: Number of credits available in the RIPE Atlas account.
 - `atlas_exporter_probe_last_connected`: Timestamp of the last time the probe connected to the RIPE Atlas network in seconds since epoch.
 - `atlas_exporter_probe_measurements`: Number of measurements the probe has performed.
+- `atlas_exporter_last_successful_refresh_timestamp`: Timestamp (seconds since epoch) of the last successful refresh from the Atlas API, labelled by `collector`. If a refresh fails, the previously collected metrics are served, so alert on this value going stale.
+
+### Health Endpoints
+
+- `/healthz`: Liveness check. Returns 200 whenever the exporter is running; does not call the Atlas API.
+- `/readyz`: Readiness check. Returns 200 if the Atlas API is reachable (result cached for 30 seconds).
 
 ### Full Configuration Variables
 
@@ -44,7 +50,7 @@ The exporter exposes the following metrics:
 | api_token           | **Required** Authenticates to the RIPE API                     |          | ATLAS_EXPORTER_API_TOKEN           |
 | listen_address      | Sets the address to listen for HTTP requests on                | :8080    | ATLAS_EXPORTER_LISTEN_ADDRESS      |
 | metrics_path        | Path to expose the metrics listener                            | /metrics | ATLAS_EXPORTER_METRICS_PATH        |
-| timeout             | Timeout for the API requests in Seconds                        | 30       | ATLAS_EXPORTER_TIMEOUT             |
+| timeout             | Timeout for each API request in Seconds                        | 30       | ATLAS_EXPORTER_TIMEOUT             |
 | tls_enabled         | Enabled TLS for the HTTP server                                | false    | ATLAS_EXPORTER_TLS_ENABLED         |
 | tls_cert_chain_path | Path to the TLS certificate chain file (PEM format)            | cert.pem | ATLAS_EXPORTER_TLS_CERT_CHAIN_PATH |
 | tls_key_path        | Path to the TLS private key file (PEM format                   | key.pem  | ATLAS_EXPORTER_TLS_KEY_PATH        |

@@ -1,12 +1,15 @@
 package main
 
 import (
+	"context"
+	"errors"
 	"fmt"
 	"os"
 	"runtime"
 	"strings"
 	"testing"
 
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/testutil"
 )
 
@@ -27,7 +30,7 @@ func TestCreditsCollector(t *testing.T) {
 	if os.Getenv("ATLAS_EXPORTER_API_TOKEN") == "" {
 		t.Skip("Skipping TestCreditsCollector because ATLAS_EXPORTER_API_TOKEN is not set")
 	}
-	collector := CreditsCollector(t.Context(), 10)
+	collector := CreditsCollector(t.Context(), NewRefreshTracker())
 	if err := testutil.CollectAndCompare(collector, strings.NewReader(`
 # HELP atlas_exporter_credits Current number of credits available in the Atlas account
 # TYPE atlas_exporter_credits gauge
@@ -41,15 +44,50 @@ func TestProbeLastConnectedCollector(t *testing.T) {
 	if os.Getenv("ATLAS_EXPORTER_API_TOKEN") == "" {
 		t.Skip("Skipping TestProbeLastConnectedCollector because ATLAS_EXPORTER_API_TOKEN is not set")
 	}
-	collector := ProbeLastConnectedCollector{
-		ctx:     t.Context(),
-		timeout: 10,
-	}
-	if err := testutil.CollectAndCompare(&collector, strings.NewReader(`
+	collector := ProbeLastConnectedCollectorFactory(t.Context(), NewRefreshTracker())
+	if err := testutil.CollectAndCompare(collector, strings.NewReader(`
 # HELP atlas_exporter_probe_last_connected Last time the probe was connected
 # TYPE atlas_exporter_probe_last_connected gauge
 atlas_exporter_probe_last_connected{probe_id="12345"} 1700000000
 }`)); err != nil {
 		t.Errorf("ProbeLastConnectedCollector failed: %v", err)
+	}
+}
+
+func TestCachedCollectorServesStaleOnFailure(t *testing.T) {
+	desc := prometheus.NewDesc("test_metric", "Test metric", nil, nil)
+	tracker := NewRefreshTracker()
+	fail := false
+	collector := &cachedCollector{
+		ctx:       t.Context(),
+		name:      "test",
+		descs:     []*prometheus.Desc{desc},
+		refreshes: tracker,
+		fetch: func(context.Context) ([]prometheus.Metric, error) {
+			if fail {
+				return nil, errors.New("upstream down")
+			}
+			return []prometheus.Metric{prometheus.MustNewConstMetric(desc, prometheus.GaugeValue, 1)}, nil
+		},
+	}
+	expected := `
+# HELP test_metric Test metric
+# TYPE test_metric gauge
+test_metric 1
+`
+	if err := testutil.CollectAndCompare(collector, strings.NewReader(expected)); err != nil {
+		t.Fatalf("initial collect failed: %v", err)
+	}
+	first := tracker.last["test"]
+	if first.IsZero() {
+		t.Fatal("expected refresh timestamp to be recorded")
+	}
+
+	fail = true
+	if err := testutil.CollectAndCompare(collector, strings.NewReader(expected)); err != nil {
+		t.Errorf("expected stale metrics after failed refresh: %v", err)
+	}
+	if !tracker.last["test"].Equal(first) {
+		t.Error("refresh timestamp must not advance on failure")
 	}
 }

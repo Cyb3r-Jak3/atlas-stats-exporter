@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"regexp"
+	"time"
 
 	"github.com/Cyb3r-Jak3/atlas-stats-exporter/pkg/version"
 )
@@ -28,12 +29,26 @@ type API struct {
 	Debug      bool
 }
 
+// DefaultTimeout is the per-request timeout used unless overridden with WithTimeout.
+const DefaultTimeout = 30 * time.Second
+
+// newHTTPClient builds a dedicated client so that options never mutate http.DefaultClient.
+func newHTTPClient() *http.Client {
+	transport := http.DefaultTransport.(*http.Transport).Clone()
+	transport.MaxIdleConnsPerHost = 10
+	transport.ResponseHeaderTimeout = DefaultTimeout
+	return &http.Client{
+		Timeout:   DefaultTimeout,
+		Transport: transport,
+	}
+}
+
 func New(opts ...Option) (*API, error) {
 	api := &API{
 		BaseURL:    "https://atlas.ripe.net/api/v2",
 		UserAgent:  fmt.Sprintf("Cyb3rJak3-Atlas-API/%s", version.Version),
 		headers:    make(http.Header),
-		httpClient: http.DefaultClient,
+		httpClient: newHTTPClient(),
 	}
 
 	for _, opt := range opts {
